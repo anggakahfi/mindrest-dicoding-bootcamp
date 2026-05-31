@@ -1,0 +1,18 @@
+{
+  "vocab_size": 19549,
+  "max_len": 50,
+  "embed_dim": 64,
+  "batch_size": 128,
+  "num_classes": 3,
+  "label_map": {
+    "0": "Stres Tinggi",
+    "1": "Stres Sedang",
+    "2": "Tidak Stres"
+  },
+  "best_val_acc": 0.7914,
+  "test_accuracy": 0.786,
+  "macro_f1": 0.7852,
+  "model_path": "/content/drive/MyDrive/TweetMind_CC26PSU250/models/tweetmind_stress_classifier.keras",
+  "tokenizer_path": "/content/drive/MyDrive/TweetMind_CC26PSU250/models/tokenizer.pkl",
+  "training_date": "2026-05-30T10:58:16.522365"
+}
