@@ -4,67 +4,51 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Navbar } from "@/components/navbar"
+import { ProtectedRoute } from "@/components/protected-route"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   type StressLevel,
   getStressColorClass,
   getStressTextColorClass,
-  fallbackRecommendations,
 } from "@/lib/mock-data"
-import { Leaf, Save, PenLine, Loader2, CheckCircle2 } from "lucide-react"
-
-// Mock prediction simulation
-function simulatePrediction(): { level: StressLevel; score: number } {
-  // Randomly generate a prediction for prototype
-  const rand = Math.random()
-  if (rand < 0.33) {
-    return { level: "Rendah", score: 0.15 + Math.random() * 0.2 }
-  } else if (rand < 0.66) {
-    return { level: "Sedang", score: 0.4 + Math.random() * 0.25 }
-  } else {
-    return { level: "Tinggi", score: 0.7 + Math.random() * 0.25 }
-  }
-}
+import { Leaf, History, PenLine, Loader2 } from "lucide-react"
+import type { Prediction } from "@/lib/api"
 
 export default function ResultPage() {
+  return (
+    <ProtectedRoute>
+      <ResultContent />
+    </ProtectedRoute>
+  )
+}
+
+function ResultContent() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
-  const [saved, setSaved] = useState(false)
-  const [prediction, setPrediction] = useState<{
-    level: StressLevel
-    score: number
-    recommendation: string
-  } | null>(null)
+  const [prediction, setPrediction] = useState<Prediction | null>(null)
 
   useEffect(() => {
-    // Check if journal text exists
-    const journalText = sessionStorage.getItem("journalText")
-    if (!journalText) {
+    // Read prediction result stored by home page
+    const stored = sessionStorage.getItem("predictionResult")
+    if (!stored) {
       router.push("/home")
       return
     }
 
-    // Simulate API loading delay
-    const timer = setTimeout(() => {
-      const result = simulatePrediction()
-      setPrediction({
-        ...result,
-        recommendation: fallbackRecommendations[result.level],
-      })
-      setLoading(false)
-    }, 2000)
+    try {
+      const parsed: Prediction = JSON.parse(stored)
+      setPrediction(parsed)
+    } catch {
+      router.push("/home")
+      return
+    }
 
-    return () => clearTimeout(timer)
+    setLoading(false)
   }, [router])
 
-  const handleSave = () => {
-    setSaved(true)
-    // In a real app, this would save to the backend
-  }
-
   const handleNewJournal = () => {
-    sessionStorage.removeItem("journalText")
+    sessionStorage.removeItem("predictionResult")
     router.push("/home")
   }
 
@@ -76,7 +60,7 @@ export default function ResultPage() {
           <div className="flex flex-col items-center gap-4 text-center">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
             <div>
-              <h2 className="text-lg font-semibold text-foreground">Menganalisis jurnalmu...</h2>
+              <h2 className="text-lg font-semibold text-foreground">Memuat hasil...</h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 Mohon tunggu sebentar
               </p>
@@ -89,7 +73,8 @@ export default function ResultPage() {
 
   if (!prediction) return null
 
-  const scorePercent = Math.round(prediction.score * 100)
+  const stressLevel = prediction.stressLevel as StressLevel
+  const scorePercent = Math.round(prediction.stressScore * 100)
 
   return (
     <div className="min-h-screen bg-background">
@@ -106,9 +91,9 @@ export default function ResultPage() {
             <CardDescription>Tingkat stres terdeteksi</CardDescription>
             <div className="mt-2 flex justify-center">
               <span
-                className={`rounded-full px-6 py-2 text-2xl font-bold ${getStressColorClass(prediction.level)}`}
+                className={`rounded-full px-6 py-2 text-2xl font-bold ${getStressColorClass(stressLevel)}`}
               >
-                {prediction.level.toUpperCase()}
+                {stressLevel.toUpperCase()}
               </span>
             </div>
           </CardHeader>
@@ -121,9 +106,9 @@ export default function ResultPage() {
               <div className="relative h-4 w-full max-w-xs overflow-hidden rounded-full bg-muted">
                 <div
                   className={`absolute left-0 top-0 h-full rounded-full transition-all duration-500 ${
-                    prediction.level === "Rendah"
+                    stressLevel === "Rendah"
                       ? "bg-stress-low"
-                      : prediction.level === "Sedang"
+                      : stressLevel === "Sedang"
                         ? "bg-stress-medium"
                         : "bg-stress-high"
                   }`}
@@ -131,7 +116,7 @@ export default function ResultPage() {
                 />
               </div>
               
-              <p className={`text-2xl font-bold ${getStressTextColorClass(prediction.level)}`}>
+              <p className={`text-2xl font-bold ${getStressTextColorClass(stressLevel)}`}>
                 {scorePercent}% yakin
               </p>
             </div>
@@ -155,37 +140,24 @@ export default function ResultPage() {
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button
-            onClick={handleSave}
-            disabled={saved}
-            className="flex-1"
-          >
-            {saved ? (
-              <>
-                <CheckCircle2 className="h-4 w-4" />
-                Tersimpan
-              </>
-            ) : (
-              <>
-                <Save className="h-4 w-4" />
-                Simpan ke Riwayat
-              </>
-            )}
-          </Button>
+          <Link href="/history" className="flex-1">
+            <Button className="w-full">
+              <History className="h-4 w-4" />
+              Lihat Riwayat
+            </Button>
+          </Link>
           <Button variant="outline" onClick={handleNewJournal} className="flex-1">
             <PenLine className="h-4 w-4" />
             Tulis Jurnal Baru
           </Button>
         </div>
 
-        {saved && (
-          <p className="mt-4 text-center text-sm text-muted-foreground">
-            Hasil analisis telah disimpan.{" "}
-            <Link href="/history" className="font-medium text-primary hover:underline">
-              Lihat riwayat
-            </Link>
-          </p>
-        )}
+        <p className="mt-4 text-center text-sm text-muted-foreground">
+          Hasil analisis telah tersimpan otomatis.{" "}
+          <Link href="/history" className="font-medium text-primary hover:underline">
+            Lihat riwayat
+          </Link>
+        </p>
       </main>
     </div>
   )

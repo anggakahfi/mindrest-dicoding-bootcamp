@@ -2,15 +2,17 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { useAuth } from "@/lib/auth-context"
+import { ApiError } from "@/lib/api"
 
 export default function RegisterPage() {
-  const router = useRouter()
+  const { register } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -56,11 +58,38 @@ export default function RegisterPage() {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (validateForm()) {
-      // Mock registration - navigate to home
-      router.push("/home")
+    if (!validateForm()) return
+
+    setLoading(true)
+    try {
+      await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        age: parseInt(formData.age),
+        gender: formData.gender as "male" | "female",
+      })
+    } catch (err) {
+      if (err instanceof ApiError) {
+        // Map specific backend errors to form fields
+        if (err.message.toLowerCase().includes("email sudah terdaftar")) {
+          setErrors((prev) => ({ ...prev, email: err.message }))
+        } else if (err.errors && err.errors.length > 0) {
+          const fieldErrors: Record<string, string> = {}
+          err.errors.forEach((e) => {
+            fieldErrors[e.field] = e.message
+          })
+          setErrors((prev) => ({ ...prev, ...fieldErrors }))
+        } else {
+          setErrors({ general: err.message })
+        }
+      } else {
+        setErrors({ general: "Terjadi kesalahan. Silakan coba lagi." })
+      }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -70,6 +99,9 @@ export default function RegisterPage() {
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }))
+    }
+    if (errors.general) {
+      setErrors((prev) => ({ ...prev, general: "" }))
     }
   }
 
@@ -94,6 +126,13 @@ export default function RegisterPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              {/* General Error */}
+              {errors.general && (
+                <div className="rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+                  {errors.general}
+                </div>
+              )}
+
               {/* Name Field */}
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="name" className="text-sm font-medium text-foreground">
@@ -107,6 +146,7 @@ export default function RegisterPage() {
                   value={formData.name}
                   onChange={handleChange}
                   aria-invalid={!!errors.name}
+                  disabled={loading}
                 />
                 {errors.name && <p className="text-xs text-destructive">{errors.name}</p>}
               </div>
@@ -124,6 +164,7 @@ export default function RegisterPage() {
                   value={formData.email}
                   onChange={handleChange}
                   aria-invalid={!!errors.email}
+                  disabled={loading}
                 />
                 {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
               </div>
@@ -142,6 +183,7 @@ export default function RegisterPage() {
                     value={formData.password}
                     onChange={handleChange}
                     aria-invalid={!!errors.password}
+                    disabled={loading}
                     className="pr-10"
                   />
                   <button
@@ -173,6 +215,7 @@ export default function RegisterPage() {
                     value={formData.age}
                     onChange={handleChange}
                     aria-invalid={!!errors.age}
+                    disabled={loading}
                   />
                   {errors.age && <p className="text-xs text-destructive">{errors.age}</p>}
                 </div>
@@ -188,6 +231,7 @@ export default function RegisterPage() {
                     value={formData.gender}
                     onChange={handleChange}
                     aria-invalid={!!errors.gender}
+                    disabled={loading}
                     className="h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
                   >
                     <option value="">Pilih</option>
@@ -198,8 +242,15 @@ export default function RegisterPage() {
                 </div>
               </div>
 
-              <Button type="submit" className="mt-2 w-full">
-                Daftar
+              <Button type="submit" className="mt-2 w-full" disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Memproses...
+                  </>
+                ) : (
+                  "Daftar"
+                )}
               </Button>
             </form>
 

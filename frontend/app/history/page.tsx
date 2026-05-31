@@ -1,11 +1,14 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { Navbar } from "@/components/navbar"
+import { ProtectedRoute } from "@/components/protected-route"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { mockHistory, mockChartData, getStressColorClass } from "@/lib/mock-data"
-import { TrendingUp, PenLine, FileText } from "lucide-react"
+import { getStressColorClass } from "@/lib/mock-data"
+import { checkinApi, predictionApi, type Checkin, type Prediction } from "@/lib/api"
+import { TrendingUp, PenLine, FileText, Loader2 } from "lucide-react"
 import {
   LineChart,
   Line,
@@ -17,7 +20,65 @@ import {
 } from "recharts"
 
 export default function HistoryPage() {
-  const hasEnoughData = mockChartData.length >= 2
+  return (
+    <ProtectedRoute>
+      <HistoryContent />
+    </ProtectedRoute>
+  )
+}
+
+interface ChartDataPoint {
+  date: string
+  score: number
+  level: string
+}
+
+function HistoryContent() {
+  const [checkins, setCheckins] = useState<Checkin[]>([])
+  const [chartData, setChartData] = useState<ChartDataPoint[]>([])
+  const [loadingHistory, setLoadingHistory] = useState(true)
+  const [loadingChart, setLoadingChart] = useState(true)
+  const [error, setError] = useState("")
+
+  // Fetch checkin history
+  useEffect(() => {
+    checkinApi
+      .getHistory(1, 20)
+      .then((data) => {
+        setCheckins(data.checkins)
+      })
+      .catch((err) => {
+        setError("Gagal memuat riwayat jurnal")
+        console.error(err)
+      })
+      .finally(() => setLoadingHistory(false))
+  }, [])
+
+  // Fetch prediction data for chart (last 7 days)
+  useEffect(() => {
+    predictionApi
+      .getHistory(1, 7, 7)
+      .then((data) => {
+        const points: ChartDataPoint[] = data.predictions
+          .map((p: Prediction) => ({
+            date: new Date(p.checkin?.checkinDate || p.createdAt).toLocaleDateString("id-ID", {
+              day: "numeric",
+              month: "short",
+            }),
+            score: p.stressScore,
+            level: p.stressLevel,
+          }))
+          .reverse() // oldest first for chart
+
+        setChartData(points)
+      })
+      .catch((err) => {
+        console.error("Failed to load chart data:", err)
+      })
+      .finally(() => setLoadingChart(false))
+  }, [])
+
+  const hasEnoughData = chartData.length >= 2
 
   return (
     <div className="min-h-screen bg-background">
@@ -36,11 +97,15 @@ export default function HistoryPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {hasEnoughData ? (
+            {loadingChart ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : hasEnoughData ? (
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
-                    data={[...mockChartData].reverse()}
+                    data={chartData}
                     margin={{ top: 5, right: 10, left: -10, bottom: 5 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
@@ -108,10 +173,20 @@ export default function HistoryPage() {
           </h2>
         </div>
 
-        {mockHistory.length > 0 ? (
+        {error && (
+          <div className="mb-4 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {error}
+          </div>
+        )}
+
+        {loadingHistory ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : checkins.length > 0 ? (
           <div className="flex flex-col gap-3">
-            {mockHistory.map((entry) => (
-              <Card key={entry.id} className="transition-shadow hover:shadow-md">
+            {checkins.map((entry) => (
+              <Card key={entry._id} className="transition-shadow hover:shadow-md">
                 <CardContent className="py-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">

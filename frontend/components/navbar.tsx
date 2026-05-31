@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { Home, History, BarChart3, LogOut, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
+import { useAuth } from "@/lib/auth-context"
 
 const navItems = [
   { href: "/home", label: "Home", icon: Home },
@@ -16,6 +17,12 @@ const navItems = [
 export function Navbar() {
   const pathname = usePathname()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const { logout } = useAuth()
+
+  const handleLogout = () => {
+    setMobileMenuOpen(false)
+    logout()
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
@@ -50,16 +57,15 @@ export function Navbar() {
             )
           })}
           <div className="ml-2 h-6 w-px bg-border" />
-          <Link href="/" onClick={(e) => {
-            e.preventDefault()
-            // Navigate to login
-            window.location.href = "/"
-          }}>
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-destructive">
-              <LogOut className="h-4 w-4" />
-              <span className="ml-2">Logout</span>
-            </Button>
-          </Link>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-muted-foreground hover:text-destructive"
+            onClick={handleLogout}
+          >
+            <LogOut className="h-4 w-4" />
+            <span className="ml-2">Logout</span>
+          </Button>
         </div>
 
         {/* Mobile Menu Button */}
@@ -100,17 +106,15 @@ export function Navbar() {
               )
             })}
             <div className="my-2 h-px bg-border" />
-            <Link href="/" onClick={(e) => {
-              e.preventDefault()
-              setMobileMenuOpen(false)
-              // Navigate to login
-              window.location.href = "/"
-            }}>
-              <Button variant="ghost" size="sm" className="w-full justify-start text-muted-foreground hover:text-destructive">
-                <LogOut className="h-4 w-4" />
-                <span className="ml-2">Logout</span>
-              </Button>
-            </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start text-muted-foreground hover:text-destructive"
+              onClick={handleLogout}
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="ml-2">Logout</span>
+            </Button>
           </div>
         </div>
       )}

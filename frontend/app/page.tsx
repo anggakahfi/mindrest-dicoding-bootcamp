@@ -2,22 +2,24 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Eye, EyeOff } from "lucide-react"
+import { Eye, EyeOff, Loader2 } from "lucide-react"
+import { useAuth } from "@/lib/auth-context"
+import { ApiError } from "@/lib/api"
 
 export default function LoginPage() {
-  const router = useRouter()
+  const { login } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   })
   const [error, setError] = useState("")
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
 
@@ -26,8 +28,18 @@ export default function LoginPage() {
       return
     }
 
-    // Mock login - navigate to home
-    router.push("/home")
+    setLoading(true)
+    try {
+      await login(formData.email, formData.password)
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message)
+      } else {
+        setError("Terjadi kesalahan. Silakan coba lagi.")
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,6 +88,7 @@ export default function LoginPage() {
                   placeholder="contoh@email.com"
                   value={formData.email}
                   onChange={handleChange}
+                  disabled={loading}
                 />
               </div>
 
@@ -92,6 +105,7 @@ export default function LoginPage() {
                     placeholder="Masukkan password"
                     value={formData.password}
                     onChange={handleChange}
+                    disabled={loading}
                     className="pr-10"
                   />
                   <button
@@ -105,8 +119,15 @@ export default function LoginPage() {
                 </div>
               </div>
 
-              <Button type="submit" className="mt-2 w-full">
-                Masuk
+              <Button type="submit" className="mt-2 w-full" disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Memproses...
+                  </>
+                ) : (
+                  "Masuk"
+                )}
               </Button>
             </form>
 

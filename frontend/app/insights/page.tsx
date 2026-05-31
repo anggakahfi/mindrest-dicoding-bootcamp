@@ -9,12 +9,6 @@ import { BarChart3, ExternalLink, AlertCircle } from "lucide-react"
 export default function InsightsPage() {
   const [dashboardAvailable] = useState(true) // Toggle for demo purposes
 
-  const handleOpenDashboard = () => {
-    // In production, this would open the Streamlit dashboard
-    // For prototype, we just show that it would open in a new tab
-    window.open("https://streamlit.io", "_blank", "noopener,noreferrer")
-  }
-
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -45,9 +39,11 @@ export default function InsightsPage() {
                   Dashboard interaktif tersedia di Streamlit. Anda dapat melihat analisis mendalam
                   tentang pola stres dan tren dari seluruh pengguna MindRest.
                 </p>
-                <Button onClick={handleOpenDashboard} className="mx-auto">
-                  <ExternalLink className="h-4 w-4" />
-                  Buka Dashboard
+                <Button asChild className="mx-auto">
+                  <a href="https://tweetmind-dashboard.streamlit.app/" target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Buka Dashboard
+                  </a>
                 </Button>
               </div>
             ) : (
