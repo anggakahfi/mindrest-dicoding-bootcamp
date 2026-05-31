@@ -1,0 +1,43 @@
+# ========================
+# Common
+# ========================
+node_modules/
+.DS_Store
+.env
+.env.local
+.env*.local
+
+# ========================
+# Frontend (Next.js)
+# ========================
+frontend/.next/
+frontend/.vercel/
+frontend/.snowflake/
+frontend/.v0-trash/
+frontend/__v0_runtime_loader.js
+frontend/__v0_devtools.tsx
+frontend/__v0_jsx-dev-runtime.ts
+frontend/next.user-config.*
+
+# ========================
+# Backend (Express + TS)
+# ========================
+backend/dist/
+backend/.env
+
+# ========================
+# AI Service (Python)
+# ========================
+ai-service/__pycache__/
+ai-service/.venv/
+ai-service/venv/
+ai-service/*.pyc
+ai-service/.env
+
+# ========================
+# Data Science
+# ========================
+data-science/.venv/
+data-science/venv/
+data-science/__pycache__/
+data-science/.ipynb_checkpoints/

@@ -1,0 +1,22 @@
+{
+  "total_rows_raw": 12492,
+  "total_cols": 6,
+  "missing_values": {
+    "text": 0,
+    "hashtags": 0,
+    "labels": 0,
+    "label_text": 0,
+    "text_length": 0,
+    "hashtag_count": 0
+  },
+  "duplicate_rows": 3907,
+  "duplicate_text": 4053,
+  "class_distribution": {
+    "Bagus": 4164,
+    "Cukup": 4164,
+    "Buruk": 4164
+  },
+  "text_length_mean": 180.81147934678194,
+  "text_length_max": 1019.0,
+  "hashtag_count_mean": 4.321565802113352
+}

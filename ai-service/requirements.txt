@@ -1,0 +1,30 @@
+# Core Data & Numerics
+numpy
+pandas
+openpyxl          # untuk read_excel .xlsx
+
+# Visualisasi
+matplotlib
+seaborn
+wordcloud
+
+# NLP
+nltk
+
+# Machine Learning
+scikit-learn
+scipy
+
+# Deep Learning
+tensorflow        # includes keras
+
+# Google Colab (opsional, hanya jika dijalankan di Colab)
+# google-colab    # sudah built-in di Colab, tidak perlu install manual
+
+
+# FastAPI
+fastapi
+uvicorn
+google-genai
+pydantic
+python-dotenv
