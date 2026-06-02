@@ -33,8 +33,6 @@ data-science/
 │       ├── viz3_correlation_heatmap.png
 │       ├── viz4_ab_testing.png
 │       └── viz5_explanatory.png
-│
-├── README.md
 |
 └── data_dictionary.md
 ```
