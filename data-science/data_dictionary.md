@@ -1,83 +1,103 @@
 # Data Dictionary
 
-## Twitter Sentiment Analysis — Mental Health Topic
+## Dataset: twitter_clean.csv
+
+Dataset ini merupakan hasil preprocessing dari dataset Twitter terkait kesehatan mental yang digunakan untuk analisis sentimen, Exploratory Data Analysis (EDA), dan A/B Testing.
+
+Jumlah data: **8.439 tweet**
 
 ---
 
-## Dataset: `twitter_clean.csv`
+## Deskripsi Kolom
 
-**Lokasi:** `datasets/processed/twitter_clean.csv`
-**Deskripsi:** Dataset tweet bertema Mental Health yang telah melalui proses cleaning dan feature engineering.
-**Jumlah Baris:** 8,439 tweet unik
-**Jumlah Kolom:** 19
-
----
-
-## Kolom Raw (dari sumber asli)
-
-| Kolom           | Tipe | Deskripsi                        | Contoh                               |
-| --------------- | ---- | -------------------------------- | ------------------------------------ |
-| `text`          | str  | Teks asli tweet                  | `"Stress may not directly cause..."` |
-| `hashtags`      | str  | Hashtag dalam format string list | `"['Stress', 'anxiety']"`            |
-| `labels`        | int  | Kode numerik sentimen            | `0`, `1`, `2`                        |
-| `label_text`    | str  | Label sentimen Bahasa Indonesia  | `Bagus`, `Cukup`, `Buruk`            |
-| `text_length`   | int  | Panjang teks asli (karakter)     | `180`                                |
-| `hashtag_count` | int  | Jumlah hashtag dalam tweet       | `3`                                  |
-
-### Label Mapping
-
-| `labels` | `label_text` | `sentiment` | Keterangan       |
-| -------- | ------------ | ----------- | ---------------- |
-| `2`      | Bagus        | Positive    | Sentimen Positif |
-| `1`      | Cukup        | Neutral     | Sentimen Netral  |
-| `0`      | Buruk        | Negative    | Sentimen Negatif |
+| Nama Kolom | Tipe Data | Deskripsi |
+|------------|-----------|-----------|
+| `text` | String | Teks tweet asli sebelum dilakukan preprocessing. |
+| `hashtags` | String | Hashtag yang terdapat pada tweet. |
+| `labels` | Integer | Label numerik sentimen (0 = Buruk, 1 = Cukup, 2 = Bagus). |
+| `label_text` | String | Representasi teks dari label numerik (`Buruk`, `Cukup`, `Bagus`). |
+| `text_length` | Integer | Panjang tweet berdasarkan jumlah karakter. |
+| `hashtag_count` | Integer | Jumlah hashtag yang terdapat dalam tweet. |
+| `text_clean` | String | Teks tweet yang telah melalui proses preprocessing seperti case folding, penghapusan karakter khusus, URL, mention, dan pembersihan teks lainnya. |
+| `sentiment` | Categorical | Kategori sentimen yang dipetakan menjadi `Negative`, `Neutral`, dan `Positive`. |
 
 ---
 
-## Kolom Cleaned
+## Mapping Label Sentimen
 
-| Kolom        | Tipe | Deskripsi                                       | Contoh                               |
-| ------------ | ---- | ----------------------------------------------- | ------------------------------------ |
-| `text_clean` | str  | Teks setelah hapus URL & normalisasi whitespace | `"Stress may not directly cause..."` |
-
----
-
-## Dataset: Raw
-
-| File                                 | Deskripsi                                       |
-| ------------------------------------ | ----------------------------------------------- |
-| `datasets/raw/Twitter_Analysis.xlsx` | Dataset mentah original — 12,492 baris, 6 kolom |
+| labels | label_text | sentiment |
+|---------|-----------|-----------|
+| 0 | Buruk | Negative |
+| 1 | Cukup | Neutral |
+| 2 | Bagus | Positive |
 
 ---
 
-## File Pendukung
+## Deskripsi Variabel Turunan
 
-| File                | Lokasi                | Deskripsi                                                     |
-| ------------------- | --------------------- | ------------------------------------------------------------- |
-| `top_hashtags.json` | `datasets/processed/` | Top 20 hashtag per sentimen (Positive/Neutral/Negative)       |
-| `ab_results.json`   | `datasets/processed/` | Hasil 4 uji statistik A/B Testing                             |
-| `assessment.json`   | `datasets/processed/` | Laporan assessing data (missing values, duplikat, distribusi) |
+### text_length
+
+Menggambarkan panjang tweet berdasarkan jumlah karakter.
+
+Contoh:
+
+```text
+"mental health matters"
+```
+
+Panjang karakter:
+
+```text
+21
+```
+
+---
+
+### hashtag_count
+
+Menggambarkan jumlah hashtag yang digunakan dalam sebuah tweet.
+
+Contoh:
+
+```text
+#mentalhealth #stress #wellbeing
+```
+
+Jumlah hashtag:
+
+```text
+3
+```
 
 ---
 
-## Statistik Ringkas Dataset Bersih
+## Kategori Sentimen
 
-| Sentimen  | Jumlah    | Persentase |
-| --------- | --------- | ---------- |
-| Positive  | 1,505     | 17.8%      |
-| Neutral   | 2,804     | 33.2%      |
-| Negative  | 4,130     | 48.9%      |
-| **Total** | **8,439** | **100%**   |
+| Sentimen | Deskripsi |
+|-----------|-----------|
+| Positive | Tweet yang mengandung opini, pengalaman, atau ekspresi positif terkait kesehatan mental. |
+| Neutral | Tweet yang bersifat informatif, netral, atau tidak menunjukkan kecenderungan sentimen yang kuat. |
+| Negative | Tweet yang mengandung opini, pengalaman, atau ekspresi negatif terkait kesehatan mental. |
+
+---
+
+## Statistik Dataset
+
+| Informasi | Nilai |
+|------------|--------|
+| Jumlah Baris | 8.439 |
+| Jumlah Kolom | 8 |
+| Missing Values | 0 |
+| Tipe Data Numerik | 3 |
+| Tipe Data Kategorikal/Teks | 5 |
 
 ---
 
-## Hasil A/B Testing
+## Sumber Dataset
 
-| Variabel        | Test           | p-value  | Signifikan? | Kesimpulan                                    |
-| --------------- | -------------- | -------- | ----------- | --------------------------------------------- |
-| Hashtag Count   | Mann-Whitney U | < 0.0001 | Ya          | Tweet Negatif (5.25) > Positif (3.73) hashtag |
-| Hashtag Density | Mann-Whitney U | < 0.0001 | Ya          | Kepadatan hashtag berbeda signifikan          |
-| Word Count      | Kruskal-Wallis | > 0.05   | Tidak       | Jumlah kata sama antar sentimen               |
-| Text Length     | Kruskal-Wallis | > 0.05   | Tidak       | Panjang teks sama antar sentimen              |
+Dataset berasal dari penelitian :
 
----
+**Stress Detection from Social Media Articles: New Dataset Benchmark and Analytical Study**
+
+Repository:
+https://github.com/SenticNet/stress-detection
