@@ -2,6 +2,7 @@
 
 ## Deskripsi
 Project ini bertujuan untuk menganalisis sentimen pengguna Twitter terhadap topik kesehatan mental. Analisis dilakukan melalui tahapan Data Wrangling, Exploratory Data Analysis (EDA), A/B Testing, dan visualisasi hasil menggunakan dashboard interaktif berbasis Streamlit.
+
 ## Struktur Folder
 
 ```text
@@ -34,6 +35,8 @@ data-science/
 │       ├── viz4_ab_testing.png
 │       └── viz5_explanatory.png
 |
+├── README.md
+|
 └── data_dictionary.md
 ```
 
@@ -48,8 +51,9 @@ data-science/
 | `notebooks/03_ab_testing.ipynb` | Pengujian hipotesis dan A/B Testing |
 | `dashboard/` | Dashboard interaktif berbasis Streamlit |
 | `reports/figures/` | Hasil visualisasi dan grafik analisis |
-| `reports/README.md` | ... |
-| `data_dictionary.md` | Dokumentasi atribut dan deskripsi dataset |
+| `reports/README.md` | Dokumentasi dan penjelasan setiap visualisasi yang terdapat pada folder `figures`, termasuk interpretasi hasil analisis yang diperoleh dari grafik. |
+| `README.md` | Dokumentasi utama proyek yang berisi deskripsi proyek, struktur folder, dataset, tahapan analisis, cara menjalankan dashboard, serta informasi kontributor. |
+| `data_dictionary.md` | Dokumentasi atribut, tipe data, dan deskripsi setiap kolom pada dataset yang digunakan. |
 
 ## Tujuan Analisis
 
