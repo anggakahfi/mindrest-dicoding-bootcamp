@@ -12,7 +12,7 @@ reports/
 │   ├── viz3_correlation_heatmap.png
 │   ├── viz4_ab_testing.png
 │   └── viz5_explanatory.png
-└── laporan_teknis.pdf  ← Laporan akhir (generate setelah jalankan notebook)
+└── README.md  ← Penjelasan Visualisasi
 ```
 
 ## Cara Generate
