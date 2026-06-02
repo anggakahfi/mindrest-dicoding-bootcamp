@@ -100,7 +100,7 @@ datasets/raw/
 
 Dashboard dapat diakses secara online melalui Streamlit Community Cloud:
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tweetmind-dashboard.streamlit.app/)
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tweetmind-dashboard.streamlit.app/)
 
 🔗 https://tweetmind-dashboard.streamlit.app/
 
