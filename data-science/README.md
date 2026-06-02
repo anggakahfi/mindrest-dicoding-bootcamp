@@ -97,10 +97,12 @@ datasets/raw/
 - Evaluasi perbedaan antar kelompok
 
 ## Dashboard Interaktif
-- Distribusi sentimen
-- Analisis hashtag
-- Hasil A/B Testing
-- Preview dataset
+
+Dashboard dapat diakses secara online melalui Streamlit Community Cloud:
+
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://tweetmind-dashboard.streamlit.app/)
+
+🔗 https://tweetmind-dashboard.streamlit.app/
 
 ## Tech Stack
 
