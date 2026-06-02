@@ -50,6 +50,7 @@ data-science/
 | `notebooks/03_ab_testing.ipynb` | Pengujian hipotesis dan A/B Testing |
 | `dashboard/` | Dashboard interaktif berbasis Streamlit |
 | `reports/figures/` | Hasil visualisasi dan grafik analisis |
+| `reports/README.md` | ... |
 | `data_dictionary.md` | Dokumentasi atribut dan deskripsi dataset |
 
 ## Tujuan Analisis
@@ -74,7 +75,7 @@ Dataset yang digunakan pada project ini berasal dari file:
 
 ```text
 datasets/raw/
-└── Twitter_Analysis.xlsx
+└── Twitter_Full.xlsx
 ```
 
 ## Tahapan Analisis
