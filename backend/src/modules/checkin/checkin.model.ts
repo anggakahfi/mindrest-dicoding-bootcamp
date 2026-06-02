@@ -32,9 +32,8 @@ const checkinSchema = new Schema<ICheckin>(
   }
 );
 
-// Compound index: one checkin per user per day, also speeds up history queries
+// Compound index: speeds up history queries sorted by newest
 checkinSchema.index({ userId: 1, checkinDate: -1 });
-checkinSchema.index({ userId: 1, checkinDate: 1 }, { unique: true });
 
 const Checkin = mongoose.model<ICheckin>('Checkin', checkinSchema, 'daily_checkins');
 

@@ -1,6 +1,6 @@
-# Folder Structure — MindRest (Monorepo)
+# Folder Structure — TweetMind (Monorepo)
 
-Struktur monorepo aktual proyek MindRest:
+Struktur monorepo aktual proyek TweetMind:
 
 ```
 capstone-dicoding/

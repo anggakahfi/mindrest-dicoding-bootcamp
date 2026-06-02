@@ -1,7 +1,7 @@
 {
-  "name": "mindrest-backend",
+  "name": "tweetmind-backend",
   "version": "1.0.0",
-  "description": "MindRest Backend API — Node.js + Express + TypeScript",
+  "description": "TweetMind Backend API — Node.js + Express + TypeScript",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch server.ts",
@@ -9,7 +9,7 @@
     "start": "node dist/server.js",
     "lint": "tsc --noEmit"
   },
-  "keywords": ["mindrest", "express", "typescript", "mongodb"],
+  "keywords": ["tweetmind", "express", "typescript", "mongodb"],
   "author": "Angga",
   "license": "ISC",
   "dependencies": {

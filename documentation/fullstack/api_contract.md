@@ -1,4 +1,4 @@
-# API Contract — MindRest
+# API Contract — TweetMind
 
 ## Konvensi Umum
 
@@ -7,7 +7,7 @@
 | Environment | URL |
 |---|---|
 | Development | `http://localhost:5000` |
-| Production | `https://mindrest-api.onrender.com` (TBD) |
+| Production | `https://tweetmind-api.onrender.com` (TBD) |
 
 ### Format Response (Envelope Pattern)
 

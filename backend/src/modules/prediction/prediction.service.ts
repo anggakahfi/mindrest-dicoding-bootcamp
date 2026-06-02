@@ -3,10 +3,32 @@ import Checkin from '../checkin/checkin.model';
 
 type StressLevel = 'Rendah' | 'Sedang' | 'Tinggi';
 
-interface FastAPIResponse {
-  stress_level: StressLevel;
-  stress_score: number;
+/**
+ * Response shape from AI Service (FastAPI) POST /analyze
+ * Matches ai-service/app/schemas/analyze_schema.py → AnalyzeResponse
+ */
+interface AIServiceResponse {
+  input_text: string;
+  prediction: {
+    label: 'Buruk' | 'Cukup' | 'Bagus';
+    confidence: number;
+    probabilities: Record<string, number>;
+  };
+  ringkasan: string;
+  rekomendasi: string[];
+  pesan_dukungan: string;
+}
+
+/**
+ * Normalized result used internally after calling AI service (or fallback)
+ */
+interface NormalizedAIResult {
+  stressLevel: StressLevel;
+  stressScore: number;
   recommendation: string;
+  ringkasan: string;
+  rekomendasi: string[];
+  pesanDukungan: string;
 }
 
 interface PaginationOptions {
@@ -16,23 +38,57 @@ interface PaginationOptions {
 }
 
 /**
- * Fallback static recommendations when FastAPI is unavailable (US-05)
- * Matches the fallbackRecommendations in frontend/lib/mock-data.ts
+ * Map AI model labels (Buruk/Cukup/Bagus) → app stress levels (Tinggi/Sedang/Rendah)
+ *   Buruk  → Tinggi  (bad mental condition = high stress)
+ *   Cukup  → Sedang  (moderate = medium stress)
+ *   Bagus  → Rendah  (good condition = low stress)
  */
-const FALLBACK_RECOMMENDATIONS: Record<StressLevel, string> = {
-  Rendah:
-    'Pertahankan kebiasaan baikmu hari ini. Tidur cukup untuk menjaga energimu tetap stabil.',
-  Sedang:
-    'Sempatkan istirahat sejenak dari layar dan tarik napas panjang selama beberapa menit.',
-  Tinggi:
-    'Coba luangkan 10 menit untuk pernapasan dalam atau dengarkan musik tenang sebelum tidur.',
+const LABEL_TO_STRESS: Record<string, StressLevel> = {
+  Buruk: 'Tinggi',
+  Cukup: 'Sedang',
+  Bagus: 'Rendah',
 };
 
 /**
- * Generate a mock prediction when FastAPI is not available
- * Uses simple random values — will be replaced by real inference
+ * Fallback static recommendations when FastAPI is unavailable (US-05)
  */
-const generateMockPrediction = (): FastAPIResponse => {
+const FALLBACK_DATA: Record<StressLevel, Omit<NormalizedAIResult, 'stressLevel' | 'stressScore'>> = {
+  Rendah: {
+    recommendation: 'Pertahankan kebiasaan baikmu hari ini. Tidur cukup untuk menjaga energimu tetap stabil.',
+    ringkasan: 'Kondisi pengguna terlihat cukup positif dan stabil.',
+    rekomendasi: [
+      'Pertahankan kebiasaan baik yang membuatmu merasa nyaman.',
+      'Tetap jaga pola tidur, makan, dan aktivitas harian.',
+      'Luangkan waktu untuk hal-hal yang membuatmu merasa lebih tenang.',
+    ],
+    pesanDukungan: 'Senang melihat kamu berada dalam kondisi yang cukup baik.',
+  },
+  Sedang: {
+    recommendation: 'Sempatkan istirahat sejenak dari layar dan tarik napas panjang selama beberapa menit.',
+    ringkasan: 'Kondisi pengguna terlihat cukup netral, namun tetap perlu menjaga keseimbangan diri.',
+    rekomendasi: [
+      'Coba luangkan waktu untuk memahami perasaanmu hari ini.',
+      'Jaga rutinitas sederhana seperti tidur cukup dan makan teratur.',
+      'Lakukan aktivitas ringan yang bisa membantu menenangkan pikiran.',
+    ],
+    pesanDukungan: 'Tidak apa-apa mengambil waktu untuk dirimu sendiri.',
+  },
+  Tinggi: {
+    recommendation: 'Coba luangkan 10 menit untuk pernapasan dalam atau dengarkan musik tenang sebelum tidur.',
+    ringkasan: 'Kondisi pengguna menunjukkan adanya tekanan emosional yang cukup tinggi.',
+    rekomendasi: [
+      'Coba ceritakan perasaanmu kepada orang yang kamu percaya.',
+      'Berikan waktu untuk istirahat dan kurangi aktivitas yang terlalu membebani.',
+      'Jika perasaan ini terus berlanjut, pertimbangkan untuk menghubungi konselor atau profesional.',
+    ],
+    pesanDukungan: 'Kamu tidak harus menghadapi semuanya sendirian.',
+  },
+};
+
+/**
+ * Generate a fallback prediction when FastAPI is not available
+ */
+const generateFallbackPrediction = (): NormalizedAIResult => {
   const score = Math.random();
   let level: StressLevel;
 
@@ -45,29 +101,46 @@ const generateMockPrediction = (): FastAPIResponse => {
   }
 
   return {
-    stress_level: level,
-    stress_score: parseFloat(score.toFixed(2)),
-    recommendation: FALLBACK_RECOMMENDATIONS[level],
+    stressLevel: level,
+    stressScore: parseFloat(score.toFixed(2)),
+    ...FALLBACK_DATA[level],
   };
 };
 
 /**
- * Call FastAPI /predict endpoint
+ * Normalize AI service response into the shape we store in MongoDB
+ */
+const normalizeAIResponse = (aiResponse: AIServiceResponse): NormalizedAIResult => {
+  const label = aiResponse.prediction.label;
+  const stressLevel = LABEL_TO_STRESS[label] || 'Sedang';
+
+  return {
+    stressLevel,
+    stressScore: aiResponse.prediction.confidence,
+    recommendation: aiResponse.rekomendasi?.[0] || FALLBACK_DATA[stressLevel].recommendation,
+    ringkasan: aiResponse.ringkasan,
+    rekomendasi: aiResponse.rekomendasi,
+    pesanDukungan: aiResponse.pesan_dukungan,
+  };
+};
+
+/**
+ * Call FastAPI POST /analyze endpoint
  * Falls back to mock prediction if FastAPI is unavailable
  */
-const callFastAPI = async (text: string): Promise<FastAPIResponse> => {
+const callAIService = async (text: string): Promise<NormalizedAIResult> => {
   const fastApiUrl = process.env.FASTAPI_URL;
 
   if (!fastApiUrl) {
-    console.warn('⚠️ FASTAPI_URL not configured, using mock prediction');
-    return generateMockPrediction();
+    console.warn('⚠️ FASTAPI_URL not configured, using fallback prediction');
+    return generateFallbackPrediction();
   }
 
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000); // 5s timeout (US-04)
+    const timeout = setTimeout(() => controller.abort(), 15000); // 15s timeout (Gemini can be slow)
 
-    const response = await fetch(`${fastApiUrl}/predict`, {
+    const response = await fetch(`${fastApiUrl}/analyze`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text }),
@@ -77,18 +150,19 @@ const callFastAPI = async (text: string): Promise<FastAPIResponse> => {
     clearTimeout(timeout);
 
     if (!response.ok) {
-      throw new Error(`FastAPI returned ${response.status}`);
+      throw new Error(`AI Service returned ${response.status}`);
     }
 
-    return await response.json();
+    const aiResponse: AIServiceResponse = await response.json();
+    return normalizeAIResponse(aiResponse);
   } catch (error: any) {
-    console.warn('⚠️ FastAPI unavailable, using mock prediction:', error.message);
-    return generateMockPrediction();
+    console.warn('⚠️ AI Service unavailable, using fallback prediction:', error.message);
+    return generateFallbackPrediction();
   }
 };
 
 /**
- * Create a prediction for a given checkin
+ * Create or update a prediction for a given checkin
  */
 export const createPrediction = async (
   checkinId: string,
@@ -102,25 +176,35 @@ export const createPrediction = async (
     throw error;
   }
 
+  // Call AI Service (or fallback)
+  const aiResult = await callAIService(checkin.journalText);
+
   // Check if prediction already exists for this checkin
   const existing = await Prediction.findOne({ checkinId });
+  
   if (existing) {
-    const error = new Error('Prediksi untuk checkin ini sudah ada');
-    (error as any).statusCode = 409;
-    (error as any).data = { existingPrediction: existing };
-    throw error;
+    // Update the existing prediction with new AI results
+    existing.stressLevel = aiResult.stressLevel;
+    existing.stressScore = aiResult.stressScore;
+    existing.recommendation = aiResult.recommendation;
+    existing.ringkasan = aiResult.ringkasan;
+    existing.rekomendasi = aiResult.rekomendasi;
+    existing.pesanDukungan = aiResult.pesanDukungan;
+    
+    await existing.save();
+    return existing;
   }
 
-  // Call FastAPI (or fallback)
-  const aiResult = await callFastAPI(checkin.journalText);
-
-  // Save prediction to database
+  // Create new prediction if it doesn't exist
   const prediction = await Prediction.create({
     checkinId,
     userId,
-    stressLevel: aiResult.stress_level,
-    stressScore: aiResult.stress_score,
+    stressLevel: aiResult.stressLevel,
+    stressScore: aiResult.stressScore,
     recommendation: aiResult.recommendation,
+    ringkasan: aiResult.ringkasan,
+    rekomendasi: aiResult.rekomendasi,
+    pesanDukungan: aiResult.pesanDukungan,
   });
 
   return prediction;

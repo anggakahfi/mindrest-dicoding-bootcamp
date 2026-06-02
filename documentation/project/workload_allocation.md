@@ -1,4 +1,4 @@
-# Workload Allocation — MindRest
+# Workload Allocation — TweetMind
 
 ## Angga (saya) — Backend (Node.js + Express)
 

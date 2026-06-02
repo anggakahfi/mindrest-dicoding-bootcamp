@@ -45,7 +45,7 @@ app.use((req, _res, next) => {
 app.get('/api/health', (_req, res) => {
   res.json({
     success: true,
-    message: 'MindRest API is running',
+    message: 'TweetMind API is running',
     timestamp: new Date().toISOString(),
   });
 });

@@ -1,5 +1,5 @@
 // =============================================================================
-// MindRest API Client
+// TweetMind API Client
 // Centralized HTTP client for all backend API calls
 // =============================================================================
 
@@ -42,7 +42,7 @@ async function apiFetch<T = any>(
   options: RequestInit = {}
 ): Promise<T> {
   const token =
-    typeof window !== "undefined" ? localStorage.getItem("mindrest_token") : null
+    typeof window !== "undefined" ? localStorage.getItem("tweetmind_token") : null
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
@@ -168,6 +168,9 @@ export interface Prediction {
   stressLevel: "Rendah" | "Sedang" | "Tinggi"
   stressScore: number
   recommendation: string
+  ringkasan: string
+  rekomendasi: string[]
+  pesanDukungan: string
   createdAt: string
   updatedAt: string
   checkin?: {

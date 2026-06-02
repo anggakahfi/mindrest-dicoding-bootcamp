@@ -37,7 +37,7 @@ export default function InsightsPage() {
               <div className="flex flex-col gap-4">
                 <p className="text-sm text-muted-foreground">
                   Dashboard interaktif tersedia di Streamlit. Anda dapat melihat analisis mendalam
-                  tentang pola stres dan tren dari seluruh pengguna MindRest.
+                  tentang pola stres dan tren dari seluruh pengguna TweetMind.
                 </p>
                 <Button asChild className="mx-auto">
                   <a href="https://tweetmind-dashboard.streamlit.app/" target="_blank" rel="noopener noreferrer">

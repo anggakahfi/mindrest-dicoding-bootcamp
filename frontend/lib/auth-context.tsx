@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Auto-load: validate existing token on mount
   // ---------------------------------------------------------------------------
   useEffect(() => {
-    const savedToken = localStorage.getItem("mindrest_token")
+    const savedToken = localStorage.getItem("tweetmind_token")
 
     if (!savedToken) {
       setLoading(false)
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })
       .catch(() => {
         // Token invalid or expired — clear it
-        localStorage.removeItem("mindrest_token")
+        localStorage.removeItem("tweetmind_token")
         setToken(null)
       })
       .finally(() => {
@@ -75,7 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(
     async (email: string, password: string) => {
       const result = await authApi.login(email, password)
-      localStorage.setItem("mindrest_token", result.token)
+      localStorage.setItem("tweetmind_token", result.token)
       setToken(result.token)
       setUser(result.user)
       router.push("/home")
@@ -89,7 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const register = useCallback(
     async (data: RegisterInput) => {
       const result = await authApi.register(data)
-      localStorage.setItem("mindrest_token", result.token)
+      localStorage.setItem("tweetmind_token", result.token)
       setToken(result.token)
       setUser(result.user)
       router.push("/home")
@@ -101,7 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Logout
   // ---------------------------------------------------------------------------
   const logout = useCallback(() => {
-    localStorage.removeItem("mindrest_token")
+    localStorage.removeItem("tweetmind_token")
     setToken(null)
     setUser(null)
     router.push("/")

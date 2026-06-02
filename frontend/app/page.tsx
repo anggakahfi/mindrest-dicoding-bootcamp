@@ -56,7 +56,7 @@ export default function LoginPage() {
           <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary">
             <span className="text-xl font-bold text-primary-foreground">M</span>
           </div>
-          <h1 className="text-2xl font-bold text-foreground">MindRest</h1>
+          <h1 className="text-2xl font-bold text-foreground">TweetMind</h1>
           <p className="mt-1 text-center text-sm text-muted-foreground">
             Kenali stresmu, kendalikan harimu.
           </p>

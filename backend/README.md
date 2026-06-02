@@ -1,8 +1,8 @@
-# Backend API — MindRest
+# Backend API — TweetMind
 
 > **PIC:** Angga
 
-REST API utama aplikasi MindRest menggunakan Node.js + Express + TypeScript.
+REST API utama aplikasi TweetMind menggunakan Node.js + Express + TypeScript.
 
 ## Tech Stack
 

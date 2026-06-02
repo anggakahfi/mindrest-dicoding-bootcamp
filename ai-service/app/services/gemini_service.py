@@ -24,7 +24,7 @@ class GeminiService:
             return self.default_recommendation(predicted_label)
 
         prompt = f"""
-Kamu adalah asisten pendukung emosional ringan untuk aplikasi MindRest.
+Kamu adalah asisten pendukung emosional ringan untuk aplikasi TweetMind.
 
 Input pengguna:
 "{user_text}"

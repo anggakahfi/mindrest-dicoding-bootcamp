@@ -1,4 +1,4 @@
-# Tech Stack — MindRest
+# Tech Stack — TweetMind
 
 ## Frontend
 | Teknologi | Fungsi |

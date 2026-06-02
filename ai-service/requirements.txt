@@ -18,14 +18,9 @@ scipy
 # Deep Learning
 tensorflow        # includes keras
 
-# Google Colab (opsional, hanya jika dijalankan di Colab)
-<<<<<<< HEAD
-# google-colab    # sudah built-in di Colab, tidak perlu install manual
-
-
+# AI Service Specifics
 fastapi
 uvicorn
 google-genai
 pydantic
 python-dotenv
->>>>>>> 319713e0401901ec436ba80a42bcd13c8ba25de0

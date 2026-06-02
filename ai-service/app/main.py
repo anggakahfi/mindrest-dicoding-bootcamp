@@ -16,7 +16,7 @@ app = FastAPI(
 @app.get("/")
 def root():
     return {
-        "message": "MindRest AI Service is running",
+        "message": "TweetMind AI Service is running",
         "docs": "/docs",
         "health": "/health",
         "analyze": "/analyze"

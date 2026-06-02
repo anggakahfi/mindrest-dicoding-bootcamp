@@ -12,7 +12,7 @@ import {
   getStressColorClass,
   getStressTextColorClass,
 } from "@/lib/mock-data"
-import { Leaf, History, PenLine, Loader2 } from "lucide-react"
+import { Leaf, History, PenLine, Loader2, Sparkles, Heart } from "lucide-react"
 import type { Prediction } from "@/lib/api"
 
 export default function ResultPage() {
@@ -76,6 +76,16 @@ function ResultContent() {
   const stressLevel = prediction.stressLevel as StressLevel
   const scorePercent = Math.round(prediction.stressScore * 100)
 
+  // Use rich AI fields if available, fall back to single recommendation
+  const ringkasan = prediction.ringkasan || ""
+  const rekomendasi =
+    prediction.rekomendasi?.length > 0
+      ? prediction.rekomendasi
+      : prediction.recommendation
+        ? [prediction.recommendation]
+        : []
+  const pesanDukungan = prediction.pesanDukungan || ""
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -123,20 +133,58 @@ function ResultContent() {
           </CardContent>
         </Card>
 
-        {/* Recommendation Card */}
-        <Card className="mb-6 border-primary/20 bg-primary/5">
-          <CardContent className="py-6">
-            <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                <Leaf className="h-5 w-5 text-primary" />
+        {/* Ringkasan (Summary) Card */}
+        {ringkasan && (
+          <Card className="mb-4 border-primary/20 bg-primary/5">
+            <CardContent className="py-6">
+              <div className="flex items-start gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                  <Leaf className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-primary">Ringkasan Kondisi</p>
+                  <p className="mt-1 text-foreground">{ringkasan}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium text-primary">Saran personal untukmu hari ini</p>
-                <p className="mt-1 text-foreground">{prediction.recommendation}</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Rekomendasi (Recommendations) Card */}
+        {rekomendasi.length > 0 && (
+          <Card className="mb-4">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Sparkles className="h-5 w-5 text-primary" />
+                Rekomendasi Untukmu
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ol className="flex flex-col gap-3">
+                {rekomendasi.map((item, index) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary">
+                      {index + 1}
+                    </span>
+                    <p className="text-foreground">{item}</p>
+                  </li>
+                ))}
+              </ol>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Pesan Dukungan (Support Message) Card */}
+        {pesanDukungan && (
+          <Card className="mb-6 border-none bg-secondary/50">
+            <CardContent className="py-5">
+              <div className="flex items-center gap-3">
+                <Heart className="h-5 w-5 shrink-0 text-stress-high" />
+                <p className="italic text-foreground">&ldquo;{pesanDukungan}&rdquo;</p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Action Buttons */}
         <div className="flex flex-col gap-3 sm:flex-row">

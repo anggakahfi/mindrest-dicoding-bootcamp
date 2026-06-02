@@ -32,7 +32,7 @@ export function Navbar() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
             <span className="text-sm font-bold text-primary-foreground">M</span>
           </div>
-          <span className="text-lg font-semibold text-foreground">MindRest</span>
+          <span className="text-lg font-semibold text-foreground">TweetMind</span>
         </Link>
 
         {/* Desktop Navigation */}

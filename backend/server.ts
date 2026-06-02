@@ -15,7 +15,7 @@ const startServer = async (): Promise<void> => {
 
     // Start Express server
     app.listen(PORT, () => {
-      console.log(`🚀 MindRest API running on http://localhost:${PORT}`);
+      console.log(`🚀 TweetMind API running on http://localhost:${PORT}`);
       console.log(`📋 Health check: http://localhost:${PORT}/api/health`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     });

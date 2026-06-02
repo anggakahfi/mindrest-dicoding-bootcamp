@@ -6,6 +6,9 @@ export interface IPrediction extends Document {
   stressLevel: 'Rendah' | 'Sedang' | 'Tinggi';
   stressScore: number;
   recommendation: string;
+  ringkasan: string;
+  rekomendasi: string[];
+  pesanDukungan: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -41,6 +44,18 @@ const predictionSchema = new Schema<IPrediction>(
     recommendation: {
       type: String,
       required: [true, 'Rekomendasi harus diisi'],
+    },
+    ringkasan: {
+      type: String,
+      default: '',
+    },
+    rekomendasi: {
+      type: [String],
+      default: [],
+    },
+    pesanDukungan: {
+      type: String,
+      default: '',
     },
   },
   {

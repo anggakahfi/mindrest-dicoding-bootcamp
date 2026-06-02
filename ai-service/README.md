@@ -1,4 +1,4 @@
-# AI Service — MindRest
+# AI Service — TweetMind
 
 > **PIC:** Deva (FastAPI + Integrasi) & Marco (Model TensorFlow)
 

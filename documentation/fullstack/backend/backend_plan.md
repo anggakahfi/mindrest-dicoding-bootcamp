@@ -1,4 +1,4 @@
-# Strategi Pengerjaan Backend — Angga (MindRest)
+# Strategi Pengerjaan Backend — Angga (TweetMind)
 
 ## Keputusan yang Sudah Ditetapkan
 

@@ -10,7 +10,7 @@ load_dotenv(dotenv_path=ENV_PATH)
 
 
 class Settings:
-    PROJECT_NAME: str = "MindRest AI Service"
+    PROJECT_NAME: str = "TweetMind AI Service"
     PROJECT_VERSION: str = "1.0.0"
 
     GEMINI_API_KEY: str | None = os.getenv("GEMINI_API_KEY")

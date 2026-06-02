@@ -1,12 +1,12 @@
 /**
- * MindRest Backend — Automated Proof of Concept Test
+ * TweetMind Backend — Automated Proof of Concept Test
  * Menguji seluruh 13 item workload scope Angga
  * 
  * Jalankan: node test-backend.mjs
  */
 
 const BASE = 'http://localhost:5000';
-const TEST_EMAIL = `test_${Date.now()}@mindrest.com`;
+const TEST_EMAIL = `test_${Date.now()}@tweetmind.com`;
 const TEST_PASSWORD = 'password123';
 
 let TOKEN = '';
@@ -45,7 +45,7 @@ function test(name, condition, detail = '') {
 async function runTests() {
   console.log('');
   console.log('╔══════════════════════════════════════════════════════╗');
-  console.log('║     MindRest Backend — Proof of Concept Test        ║');
+  console.log('║     TweetMind Backend — Proof of Concept Test        ║');
   console.log('╚══════════════════════════════════════════════════════╝');
   console.log('');
 
@@ -54,7 +54,7 @@ async function runTests() {
   const health = await request('GET', '/api/health');
   test('GET /api/health returns 200', health.status === 200);
   test('Response envelope: success=true', health.data.success === true);
-  test('Message confirms running', health.data.message === 'MindRest API is running');
+  test('Message confirms running', health.data.message === 'TweetMind API is running');
   console.log('');
 
   // ─── 2. Register (Item 3, 6, 11) ──────────────────

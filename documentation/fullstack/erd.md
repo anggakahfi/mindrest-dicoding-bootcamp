@@ -1,4 +1,4 @@
-# Entity Relationship Diagram — MindRest
+# Entity Relationship Diagram — TweetMind
 
 ## Gambaran Umum
 

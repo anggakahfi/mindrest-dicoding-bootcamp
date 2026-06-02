@@ -30,29 +30,14 @@ const getTodayUTC = (): Date => {
 };
 
 /**
- * Create or update today's checkin (upsert)
- * Implements US-06: if checkin already exists today, update it
+ * Create a new checkin (always creates a new record for every journal entry)
  */
 export const createCheckin = async (
   input: CreateCheckinInput
 ): Promise<{ checkin: ICheckin; isUpdated: boolean }> => {
-  const checkinDate = getTodayUTC();
+  const checkinDate = new Date();
 
-  // Try to find existing checkin for today
-  const existing = await Checkin.findOne({
-    userId: input.userId,
-    checkinDate,
-  });
-
-  if (existing) {
-    // Update existing checkin
-    existing.journalText = input.journalText;
-    await existing.save();
-
-    return { checkin: existing, isUpdated: true };
-  }
-
-  // Create new checkin
+  // Always create a new checkin
   const checkin = await Checkin.create({
     userId: input.userId,
     journalText: input.journalText,

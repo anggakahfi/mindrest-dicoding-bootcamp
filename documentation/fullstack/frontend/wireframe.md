@@ -1,4 +1,4 @@
-# Wireframe — MindRest
+# Wireframe — TweetMind
 
 > **PIC:** Reynaldo
 
